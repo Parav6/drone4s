@@ -33,7 +33,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(app);
 const database = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
