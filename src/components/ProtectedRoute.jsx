@@ -1,5 +1,6 @@
-'use client';
+// 'use client';
 
+import { redirect } from 'next/navigation';
 import { useFirebase } from '../context/Firebase';
 
 const ProtectedRoute = ({ children, fallback = null }) => {
@@ -27,6 +28,7 @@ const ProtectedRoute = ({ children, fallback = null }) => {
                 </div>
             </div>
         );
+        // redirect('/login'); // Redirect to home or login page
     }
 
     return children;

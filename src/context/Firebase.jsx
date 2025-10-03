@@ -40,8 +40,14 @@ const googleProvider = new GoogleAuthProvider();
 
 // Configure Google Provider
 googleProvider.setCustomParameters({
-    prompt: 'select_account'
+    prompt: 'select_account',
+    // Force popup instead of redirect
+    display: 'popup'
 });
+
+// Add popup configuration to handle cancellation better
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
 
 export const useFirebase = () => useContext(FirebaseContext);
 
@@ -166,11 +172,37 @@ export const FirebaseProvider = (props) => {
     const signInWithGoogle = async () => {
         try {
             setError(null);
-            setLoading(true);
+
+            // Clear any existing auth errors before attempting sign-in
+            await firebaseAuth.authStateReady();
+
             const result = await signInWithPopup(firebaseAuth, googleProvider);
             return result.user;
         } catch (error) {
             console.error('Google sign-in error:', error);
+
+            // Handle different types of popup cancellation/blocking
+            const cancellationCodes = [
+                'auth/cancelled-popup-request',
+                'auth/popup-closed-by-user',
+                'auth/popup-blocked',
+                'auth/operation-not-allowed',
+                'auth/user-cancelled'
+            ];
+
+            // Check if it's a cancellation
+            if (cancellationCodes.includes(error.code) ||
+                error.message?.includes('popup') ||
+                error.message?.includes('cancelled') ||
+                error.message?.includes('closed')) {
+
+                console.log('User cancelled sign-in or popup was blocked:', error.code);
+                // Don't set error state for cancellations
+                return null;
+            }
+
+            // For actual authentication errors
+            console.error('Actual authentication error:', error.code, error.message);
             setError(error.message);
             throw error;
         } finally {
@@ -204,6 +236,12 @@ export const FirebaseProvider = (props) => {
 
     // Clear error
     const clearError = () => setError(null);
+
+    // Clear any pending auth operations (useful for popup cancellations)
+    const clearAuthState = () => {
+        setError(null);
+        setLoading(false);
+    };
 
     // Update user role (admin function)
     const updateUserRole = async (uid, newRole) => {
@@ -263,6 +301,7 @@ export const FirebaseProvider = (props) => {
         signInWithGoogleRedirect,
         logout,
         clearError,
+        clearAuthState,
 
         // Database methods
         createOrUpdateUser,
