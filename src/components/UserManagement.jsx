@@ -113,7 +113,7 @@ const UserManagement = () => {
                                                         {userData.displayName || 'Anonymous'}
                                                     </div>
                                                     <div className="text-sm text-gray-500">
-                                                        {userData.uid.substring(0, 8)}...
+                                                        {userData.uid ? `${userData.uid.substring(0, 8)}...` : 'N/A'}
                                                     </div>
                                                 </div>
                                             </div>
