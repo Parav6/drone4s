@@ -12,7 +12,6 @@ export default function Home() {
   const { user, isAuthenticated, isAdmin } = useFirebase();
   console.log(isAuthenticated);
 
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {isAuthenticated ? redirect('/dashboard') : redirect("/about")}

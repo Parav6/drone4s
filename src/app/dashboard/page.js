@@ -1,5 +1,6 @@
 'use client';
 
+import SOSButton from '@/components/SOSButton';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import UserProfile from '../../components/UserProfile';
 import { useAuth } from '../../hooks/useAuth';
@@ -126,7 +127,7 @@ export default function Dashboard() {
     const { user } = useAuth();
     return (
         <ProtectedRoute>
-
+            <SOSButton />
         </ProtectedRoute>
     )
 }
