@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { app } from "../../../context/Firebase";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 import { useAuth } from "../../../hooks/useAuth";
@@ -27,15 +27,44 @@ export default function AdminAlertMap() {
   useEffect(() => {
     const alertsRef = ref(db, 'responses');
     const unsubscribe = onValue(alertsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const alertsList = Object.entries(data).map(([key, value]) => ({
-          id: key,
-          ...value
-        }));
-        setAlerts(alertsList);
+      try {
+        const data = snapshot.val();
+        if (data) {
+          const alertsList = Object.entries(data)
+            .map(([key, value]) => {
+              // Validate and clean the data
+              if (!value || typeof value !== 'object') {
+                console.warn('Invalid alert data for key:', key, value);
+                return null;
+              }
+              
+              return {
+                id: key,
+                problem: value.problem || 'Unknown Problem',
+                description: value.description || 'No description available',
+                userName: value.userName || 'Unknown User',
+                timestamp: value.timestamp || Date.now(),
+                latitude: value.latitude ? parseFloat(value.latitude) : null,
+                longitude: value.longitude ? parseFloat(value.longitude) : null,
+                priority: value.priority || 'low',
+                isVerified: value.isVerified || false
+              };
+            })
+            .filter(alert => alert && alert.latitude && alert.longitude); // Only include alerts with valid coordinates
+          
+          setAlerts(alertsList);
+        } else {
+          setAlerts([]);
+        }
+      } catch (error) {
+        console.error('Error processing Firebase data:', error);
+        setAlerts([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error('Firebase error:', error);
+      setLoading(false);
+      setAlerts([]);
     });
 
     return () => unsubscribe();
@@ -43,33 +72,77 @@ export default function AdminAlertMap() {
 
   // Initialize map
   useEffect(() => {
+    // Don't reinitialize if map already exists
+    if (map) {
+      return;
+    }
+
+    // Check if script is already loaded
+    if (window.mappls) {
+      initializeMap();
+      return;
+    }
+
+    // Check if script is already being loaded
+    const existingScript = document.querySelector('script[src*="mappls.com"]');
+    if (existingScript) {
+      existingScript.addEventListener('load', initializeMap);
+      return () => existingScript.removeEventListener('load', initializeMap);
+    }
+
     const script = document.createElement("script");
     script.src = `https://apis.mappls.com/advancedmaps/api/f6cc67d011fd246c37345dbaac88f334/map_sdk?layer=vector&v=3.0`;
     script.async = true;
-    script.onload = () => {
-      if (window.mappls) {
-        // Wait for the DOM to be ready and the map div to exist
-        const initMap = () => {
-          const mapElement = document.getElementById("map");
-          if (mapElement) {
-            const mapInstance = new window.mappls.Map("map", {});
-            setMap(mapInstance);
-            setMapLoading(false);
-          } else {
-            // If map div doesn't exist yet, try again after a short delay
-            setTimeout(initMap, 100);
-          }
-        };
-        initMap();
-      }
+    script.onload = initializeMap;
+    script.onerror = () => {
+      console.error('Failed to load MapPLS script');
+      setMapLoading(false);
     };
-    document.body.appendChild(script);
+    
+    document.head.appendChild(script);
+    
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
       }
     };
-  }, []);
+  }, [map]); // Add map as dependency to prevent reinitialization
+
+  const initializeMap = () => {
+    if (!window.mappls) {
+      console.error('MapPLS not available');
+      setMapLoading(false);
+      return;
+    }
+
+    // Wait for the DOM to be ready and the map div to exist
+    const initMap = () => {
+      const mapElement = document.getElementById("map");
+      if (mapElement && !map) { // Only initialize if map doesn't exist
+        try {
+          // IIT Roorkee campus coordinates
+          const iitRoorkeeCenter = { lat: 29.8647, lng: 77.8963 };
+          
+          const mapInstance = new window.mappls.Map("map", {
+            center: iitRoorkeeCenter,
+            zoom: 14
+          });
+          
+          setMap(mapInstance);
+          setMapLoading(false);
+        } catch (error) {
+          console.error('Error initializing map:', error);
+          setMapLoading(false);
+        }
+      } else if (!mapElement) {
+        // If map div doesn't exist yet, try again after a short delay
+        setTimeout(initMap, 100);
+      }
+    };
+    
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(initMap);
+  };
 
   // Add global functions for popup buttons
   useEffect(() => {
@@ -88,128 +161,154 @@ export default function AdminAlertMap() {
     };
   }, []);
 
-  // Add markers to map when alerts or map changes
-  useEffect(() => {
-    if (map && !mapLoading && alerts.length > 0) {
-      // Clear existing markers
-      map.removeAllMarkers?.();
+  // Debounced marker updates to prevent excessive re-renders
+  const debouncedMarkerUpdate = useCallback(() => {
+    if (map && !mapLoading) {
+      // Clear existing markers safely
+      try {
+        // Try different methods to clear markers based on API availability
+        if (typeof map.removeAllMarkers === 'function') {
+          map.removeAllMarkers();
+        } else if (typeof map.clearMarkers === 'function') {
+          map.clearMarkers();
+        } else {
+          // Fallback: manually remove markers from state
+          Object.values(markers).forEach(marker => {
+            if (marker && typeof marker.remove === 'function') {
+              marker.remove();
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Error clearing markers:', error);
+      }
       
-      alerts.forEach((alert) => {
-        if (alert.latitude && alert.longitude) {
-          // Determine marker color based on priority and verification status
-          let markerColor;
-          let markerIcon;
-          
-          if (!alert.isVerified) {
-            markerColor = '#6b7280'; // Grey for unverified
-            markerIcon = 'https://maps.google.com/mapfiles/ms/icons/gray-dot.png';
-          } else {
-            switch (alert.priority) {
-              case 'high':
-                markerColor = '#dc2626'; // Red for high priority
-                markerIcon = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
-                break;
-              case 'medium':
-                markerColor = '#f59e0b'; // Orange for medium priority
-                markerIcon = 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png';
-                break;
-              case 'low':
-                markerColor = '#eab308'; // Yellow for low priority
-                markerIcon = 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-                break;
-              default:
-                markerColor = '#eab308'; // Default to yellow
-                markerIcon = 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+      // Clear markers state
+      setMarkers({});
+      
+      if (alerts.length > 0) {
+        alerts.forEach((alert) => {
+          if (alert.latitude && alert.longitude && !isNaN(alert.latitude) && !isNaN(alert.longitude)) {
+            // Determine marker color based on priority and verification status
+            let markerColor;
+            let markerIcon;
+            
+            if (!alert.isVerified) {
+              markerColor = '#6b7280'; // Grey for unverified
+              markerIcon = 'https://maps.google.com/mapfiles/ms/icons/gray-dot.png';
+            } else {
+              switch (alert.priority) {
+                case 'high':
+                  markerColor = '#dc2626'; // Red for high priority
+                  markerIcon = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                  break;
+                case 'medium':
+                  markerColor = '#f59e0b'; // Orange for medium priority
+                  markerIcon = 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png';
+                  break;
+                case 'low':
+                  markerColor = '#eab308'; // Yellow for low priority
+                  markerIcon = 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+                  break;
+                default:
+                  markerColor = '#eab308'; // Default to yellow
+                  markerIcon = 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+              }
+            }
+
+            // Determine if this marker should be highlighted
+            const isSelected = selectedAlertId === alert.id;
+            const highlightColor = isSelected ? '#3b82f6' : markerColor; // Blue for selected
+            const highlightIcon = isSelected ? 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' : markerIcon;
+
+            try {
+              const marker = new window.mappls.Marker({
+                map: map,
+                position: { lat: alert.latitude, lng: alert.longitude },
+                draggable: false, // Make markers non-draggable
+                popupHtml: `
+                  <div style="padding: 12px; min-width: 250px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: ${isSelected ? '3px solid #3b82f6' : 'none'};">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                      <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${highlightColor}; margin-right: 8px; ${isSelected ? 'box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);' : ''}"></div>
+                      <h4 style="margin: 0; color: #1f2937; font-size: 1rem; font-weight: bold;">${alert.problem || 'Unknown Problem'}</h4>
+                    </div>
+                    <p style="margin: 0 0 12px 0; font-size: 0.875rem; color: #374151; line-height: 1.4;">${alert.description || 'No description available'}</p>
+                    <div style="font-size: 0.75rem; color: #6b7280; background: #f9fafb; padding: 8px; border-radius: 4px;">
+                      <div style="margin-bottom: 4px;"><strong style="color: #374151;">User:</strong> ${alert.userName || 'Unknown'}</div>
+                      <div style="margin-bottom: 4px;"><strong style="color: #374151;">Time:</strong> ${alert.timestamp ? new Date(alert.timestamp).toLocaleString() : 'Unknown'}</div>
+                      <div style="margin-bottom: 4px;">
+                        <strong style="color: #374151;">Priority:</strong> 
+                        <span style="color: ${markerColor}; font-weight: bold; text-transform: uppercase;">${alert.priority || 'low'}</span>
+                      </div>
+                      <div style="margin-bottom: 8px;">
+                        <strong style="color: #374151;">Status:</strong> 
+                        <span style="color: ${alert.isVerified ? '#16a34a' : '#dc2626'}; font-weight: bold;">
+                          ${alert.isVerified ? '✅ Verified' : '❌ Pending'}
+                        </span>
+                      </div>
+                      <div style="display: flex; gap: 8px;">
+                        ${!alert.isVerified ? `
+                          <button onclick="window.verifyAlert('${alert.id}')" style="background: #16a34a; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                            ✓ Verify
+                          </button>
+                        ` : ''}
+                        <button onclick="window.removeAlert('${alert.id}')" style="background: #dc2626; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                          🗑️ Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                `,
+                icon: highlightIcon
+              });
+
+              // Store marker reference
+              setMarkers(prev => ({
+                ...prev,
+                [alert.id]: marker
+              }));
+            } catch (error) {
+              console.error('Error creating marker for alert:', alert.id, error);
             }
           }
-
-          // Determine if this marker should be highlighted
-          const isSelected = selectedAlertId === alert.id;
-          const highlightColor = isSelected ? '#3b82f6' : markerColor; // Blue for selected
-          const highlightIcon = isSelected ? 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' : markerIcon;
-
-          const marker = new window.mappls.Marker({
-            map: map,
-            position: { lat: alert.latitude, lng: alert.longitude },
-            popupHtml: `
-              <div style="padding: 12px; min-width: 250px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: ${isSelected ? '3px solid #3b82f6' : 'none'};">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${highlightColor}; margin-right: 8px; ${isSelected ? 'box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);' : ''}"></div>
-                  <h4 style="margin: 0; color: #1f2937; font-size: 1rem; font-weight: bold;">${alert.problem}</h4>
-                </div>
-                <p style="margin: 0 0 12px 0; font-size: 0.875rem; color: #374151; line-height: 1.4;">${alert.description}</p>
-                <div style="font-size: 0.75rem; color: #6b7280; background: #f9fafb; padding: 8px; border-radius: 4px;">
-                  <div style="margin-bottom: 4px;"><strong style="color: #374151;">User:</strong> ${alert.userName || 'Unknown'}</div>
-                  <div style="margin-bottom: 4px;"><strong style="color: #374151;">Time:</strong> ${new Date(alert.timestamp).toLocaleString()}</div>
-                  <div style="margin-bottom: 4px;">
-                    <strong style="color: #374151;">Priority:</strong> 
-                    <span style="color: ${markerColor}; font-weight: bold; text-transform: uppercase;">${alert.priority || 'low'}</span>
-                  </div>
-                  <div style="margin-bottom: 8px;">
-                    <strong style="color: #374151;">Status:</strong> 
-                    <span style="color: ${alert.isVerified ? '#16a34a' : '#dc2626'}; font-weight: bold;">
-                      ${alert.isVerified ? '✅ Verified' : '❌ Pending'}
-                    </span>
-                  </div>
-                  <div style="display: flex; gap: 8px;">
-                    ${!alert.isVerified ? `
-                      <button onclick="window.verifyAlert('${alert.id}')" style="background: #16a34a; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
-                        ✓ Verify
-                      </button>
-                    ` : ''}
-                    <button onclick="window.removeAlert('${alert.id}')" style="background: #dc2626; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
-                      🗑️ Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            `,
-            icon: highlightIcon
-          });
-
-          // Store marker reference
-          setMarkers(prev => ({
-            ...prev,
-            [alert.id]: marker
-          }));
-        }
-      });
-
-      // Set map center to first alert if available
-      if (alerts.length > 0 && alerts[0].latitude && alerts[0].longitude) {
-        map.setCenter({ lat: alerts[0].latitude, lng: alerts[0].longitude });
-        map.setZoom(12);
+        });
       }
     }
-  }, [map, mapLoading, alerts, selectedAlertId]);
+  }, [map, mapLoading, alerts, selectedAlertId, markers]);
 
-  const updateAlertStatus = async (alertId, updates) => {
+  // Add markers to map when alerts or map changes (with debouncing)
+  useEffect(() => {
+    const timeoutId = setTimeout(debouncedMarkerUpdate, 100);
+    return () => clearTimeout(timeoutId);
+  }, [debouncedMarkerUpdate]);
+
+  const updateAlertStatus = useCallback(async (alertId, updates) => {
     try {
       const alertRef = ref(db, `responses/${alertId}`);
       await set(alertRef, { ...alerts.find(a => a.id === alertId), ...updates });
     } catch (error) {
       console.error('Error updating alert:', error);
     }
-  };
+  }, [db, alerts]);
 
-  const removeAlert = async (alertId) => {
+  const removeAlert = useCallback(async (alertId) => {
     try {
       const alertRef = ref(db, `responses/${alertId}`);
       await set(alertRef, null); // Remove from database
     } catch (error) {
       console.error('Error removing alert:', error);
     }
-  };
+  }, [db]);
 
-  const handleVerify = (alertId) => {
+  const handleVerify = useCallback((alertId) => {
     updateAlertStatus(alertId, { isVerified: true });
-  };
+  }, [updateAlertStatus]);
 
-  const handlePriorityChange = (alertId, priority) => {
+  const handlePriorityChange = useCallback((alertId, priority) => {
     updateAlertStatus(alertId, { priority });
-  };
+  }, [updateAlertStatus]);
 
-  const handleAlertClick = (alert) => {
+  const handleAlertClick = useCallback((alert) => {
     if (alert.latitude && alert.longitude && map) {
       // Set selected alert
       setSelectedAlertId(alert.id);
@@ -221,7 +320,7 @@ export default function AdminAlertMap() {
       // Optional: Open popup for the marker (if the map API supports it)
       // You might need to store marker references to trigger popups
     }
-  };
+  }, [map]);
 
   if (!isAdmin) {
     return (
