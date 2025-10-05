@@ -1,8 +1,13 @@
 // Import and configure the Firebase SDK
 // These scripts are made available when the app is served or deployed on Firebase Hosting
 // If you do not want to use Firebase Hosting, see https://firebase.google.com/docs/web/setup
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
+
+try {
+  importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js');
+} catch (error) {
+  console.error('Failed to load Firebase scripts:', error);
+}
 
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
@@ -20,30 +25,40 @@ firebase.initializeApp({
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-const messaging = firebase.messaging();
+let messaging;
+try {
+  messaging = firebase.messaging();
+  console.log('[firebase-messaging-sw.js] Firebase messaging initialized successfully');
+} catch (error) {
+  console.error('[firebase-messaging-sw.js] Failed to initialize Firebase messaging:', error);
+}
 
 // Optional: Handle background messages
-messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  
-  // Customize notification here
-  const notificationTitle = payload.notification?.title || 'Background Message Title';
-  const notificationOptions = {
-    body: payload.notification?.body || 'Background Message body.',
-    icon: '/firebase-logo.svg',
-    badge: '/firebase-logo.svg',
-    tag: 'background-message',
-    requireInteraction: true,
-    actions: [
-      {
-        action: 'open',
-        title: 'Open App'
-      }
-    ]
-  };
+if (messaging) {
+  messaging.onBackgroundMessage((payload) => {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    
+    // Customize notification here
+    const notificationTitle = payload.notification?.title || 'Background Message Title';
+    const notificationOptions = {
+      body: payload.notification?.body || 'Background Message body.',
+      icon: '/firebase-logo.svg',
+      badge: '/firebase-logo.svg',
+      tag: 'background-message',
+      requireInteraction: true,
+      actions: [
+        {
+          action: 'open',
+          title: 'Open App'
+        }
+      ]
+    };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+} else {
+  console.error('[firebase-messaging-sw.js] Messaging not initialized, cannot handle background messages');
+}
 
 // Handle notification click
 self.addEventListener('notificationclick', function(event) {
