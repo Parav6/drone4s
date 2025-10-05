@@ -14,7 +14,8 @@ const SOS = () => {
     const [showInstructions, setShowInstructions] = useState(false);
     const [showGuardStatus, setShowGuardStatus] = useState(false);
     const [uniqueDeviceId, setUniqueDeviceId] = useState(null);
-    const { sosActive, sosData, disableSOS, getSOSStatusMessage, loading } = useSOSProtection();
+    const [assignedGuardId, setAssignedGuardId] = useState(null);
+    const { sosActive, sosData, disableSOS, getSOSStatusMessage, getAssignedGuard, loading } = useSOSProtection();
     const { user } = useFirebase();
     const router = useRouter();
 
@@ -42,6 +43,20 @@ const SOS = () => {
             router.push('/dashboard');
         }
     }, [sosActive, loading, router]);
+
+    // Update assigned guard ID when guard assignment changes
+    useEffect(() => {
+        if (sosActive && !loading) {
+            const assignedGuard = getAssignedGuard();
+            if (assignedGuard && assignedGuard.guardId) {
+                setAssignedGuardId(assignedGuard.guardId);
+                console.log('Assigned guard ID updated:', assignedGuard.guardId);
+            } else {
+                setAssignedGuardId(null);
+                console.log('No guard assigned, guard ID cleared');
+            }
+        }
+    }, [sosActive, loading, sosData, getAssignedGuard]);
 
     const handleCancelSOS = () => {
         setShowCancelConfirmation(true);
@@ -224,6 +239,7 @@ const SOS = () => {
                                 <Map
                                     zoom={16}
                                     followUser={true}
+                                    trackUserIds={assignedGuardId ? [assignedGuardId] : []}
                                     enableRealTimeTracking={true}
                                     publishCurrentUser={true}
                                     deviceId={uniqueDeviceId} // Use unique device ID
@@ -526,32 +542,74 @@ const SOS = () => {
                                     <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px', color: '#7c3aed' }}>
                                         🛡️ Guard Status
                                     </div>
+                                    
+                                    {/* Debug Info */}
+                                    <div style={{ 
+                                        fontSize: '10px', 
+                                        color: '#666', 
+                                        marginBottom: '8px',
+                                        padding: '4px',
+                                        backgroundColor: '#f9f9f9',
+                                        borderRadius: '4px'
+                                    }}>
+                                        Guard ID State: {assignedGuardId || 'None'}
+                                    </div>
 
                                     <div style={{ fontSize: '12px', color: '#333', lineHeight: '1.5' }}>
                                         {/* Guard Assignment Status */}
-                                        <div style={{
-                                            backgroundColor: '#f3f4f6',
-                                            borderRadius: '8px',
-                                            padding: '10px',
-                                            marginBottom: '10px',
-                                            border: '1px solid #e5e7eb'
-                                        }}>
-                                            <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#374151' }}>
-                                                Assignment Status:
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {(() => {
+                                            const assignedGuard = getAssignedGuard();
+                                            return (
                                                 <div style={{
-                                                    width: '8px',
-                                                    height: '8px',
-                                                    borderRadius: '50%',
-                                                    backgroundColor: '#10b981',
-                                                    animation: 'pulse 2s infinite'
-                                                }}></div>
-                                                <span style={{ color: '#10b981', fontWeight: 'bold' }}>
-                                                    Guard Assigned ✓
-                                                </span>
-                                            </div>
-                                        </div>
+                                                    backgroundColor: assignedGuard ? '#f0fdf4' : '#fef2f2',
+                                                    borderRadius: '8px',
+                                                    padding: '10px',
+                                                    marginBottom: '10px',
+                                                    border: `1px solid ${assignedGuard ? '#10b981' : '#ef4444'}`
+                                                }}>
+                                                    <div style={{ fontWeight: 'bold', marginBottom: '5px', color: '#374151' }}>
+                                                        Assignment Status:
+                                                    </div>
+                                                    {assignedGuard ? (
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                                <div style={{
+                                                                    width: '8px',
+                                                                    height: '8px',
+                                                                    borderRadius: '50%',
+                                                                    backgroundColor: '#10b981',
+                                                                    animation: 'pulse 2s infinite'
+                                                                }}></div>
+                                                                <span style={{ color: '#10b981', fontWeight: 'bold' }}>
+                                                                    Guard Assigned ✓
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ fontSize: '11px', color: '#374151' }}>
+                                                                <div><strong>Guard ID:</strong> {assignedGuard.guardId}</div>
+                                                                <div><strong>Guard:</strong> {assignedGuard.guardName}</div>
+                                                                <div><strong>Distance:</strong> {Math.round(assignedGuard.distance)}m away</div>
+                                                                <div><strong>Status:</strong> {assignedGuard.isOnline ? '🟢 Online' : '🔴 Offline'}</div>
+                                                                <div><strong>Connection:</strong> {assignedGuard.status || 'Unknown'}</div>
+                                                                <div><strong>Assigned:</strong> {new Date(assignedGuard.assignedAt).toLocaleTimeString()}</div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <div style={{
+                                                                width: '8px',
+                                                                height: '8px',
+                                                                borderRadius: '50%',
+                                                                backgroundColor: '#ef4444',
+                                                                animation: 'pulse 2s infinite'
+                                                            }}></div>
+                                                            <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                                                                No Guards Available
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
 
                                         {/* Guards Coming */}
                                         <div style={{
