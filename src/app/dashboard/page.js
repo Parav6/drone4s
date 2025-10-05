@@ -4,131 +4,69 @@ import SOSButton from '@/components/SOSButton';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import UserProfile from '../../components/UserProfile';
 import { useAuth } from '../../hooks/useAuth';
-
-// export default function Dashboard() {
-//     const { user, signOut } = useAuth();
-
-//     return (
-//         <ProtectedRoute>
-//             <div className="min-h-screen bg-gray-50">
-//                 <div className="bg-white shadow">
-//                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                         <div className="flex justify-between items-center py-6">
-//                             <h1 className="text-3xl font-bold text-gray-900">
-//                                 Dashboard
-//                             </h1>
-//                             <button
-//                                 onClick={signOut}
-//                                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-//                             >
-//                                 Sign Out
-//                             </button>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-//                     <div className="px-4 py-6 sm:px-0">
-//                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//                             {/* User Profile Card */}
-//                             <div className="bg-white overflow-hidden shadow rounded-lg">
-//                                 <div className="px-4 py-5 sm:p-6">
-//                                     <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-//                                         Profile Information
-//                                     </h3>
-//                                     <UserProfile />
-//                                 </div>
-//                             </div>
-
-//                             {/* Stats Card */}
-//                             <div className="bg-white overflow-hidden shadow rounded-lg">
-//                                 <div className="px-4 py-5 sm:p-6">
-//                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-//                                         Account Stats
-//                                     </h3>
-//                                     <div className="mt-4 space-y-3">
-//                                         <div className="flex justify-between">
-//                                             <span className="text-sm text-gray-600">Account Created:</span>
-//                                             <span className="text-sm font-medium">
-//                                                 {new Date().toLocaleDateString()}
-//                                             </span>
-//                                         </div>
-//                                         <div className="flex justify-between">
-//                                             <span className="text-sm text-gray-600">Last Login:</span>
-//                                             <span className="text-sm font-medium">
-//                                                 {new Date().toLocaleDateString()}
-//                                             </span>
-//                                         </div>
-//                                         <div className="flex justify-between">
-//                                             <span className="text-sm text-gray-600">Status:</span>
-//                                             <span className="text-sm font-medium text-green-600">
-//                                                 Active
-//                                             </span>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-
-//                             {/* Quick Actions Card */}
-//                             <div className="bg-white overflow-hidden shadow rounded-lg">
-//                                 <div className="px-4 py-5 sm:p-6">
-//                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-//                                         Quick Actions
-//                                     </h3>
-//                                     <div className="mt-4 space-y-3">
-//                                         <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border">
-//                                             View Analytics
-//                                         </button>
-//                                         <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border">
-//                                             Manage Settings
-//                                         </button>
-//                                         <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border">
-//                                             Export Data
-//                                         </button>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {/* Welcome Message */}
-//                         <div className="mt-8 bg-white shadow rounded-lg">
-//                             <div className="px-4 py-5 sm:p-6">
-//                                 <h3 className="text-lg leading-6 font-medium text-gray-900">
-//                                     Welcome back, {user?.displayName || user?.email}! 👋
-//                                 </h3>
-//                                 <p className="mt-2 text-sm text-gray-600">
-//                                     This is your protected dashboard. Only authenticated users can access this page.
-//                                     You can use this pattern to create any protected routes in your application.
-//                                 </p>
-//                                 <div className="mt-4 p-4 bg-blue-50 rounded-md">
-//                                     <h4 className="text-sm font-medium text-blue-800">
-//                                         Authentication Features Available:
-//                                     </h4>
-//                                     <ul className="mt-2 text-sm text-blue-700 space-y-1">
-//                                         <li>✅ Google OAuth Sign-in</li>
-//                                         <li>✅ Auto-persist authentication state</li>
-//                                         <li>✅ Protected routes</li>
-//                                         <li>✅ User profile management</li>
-//                                         <li>✅ Error handling</li>
-//                                         <li>✅ Loading states</li>
-//                                     </ul>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </ProtectedRoute>
-//     );
-// }
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
-    // const { user, isAdmin } = useAuth();
     const { user } = useAuth();
+    const router = useRouter();
+
+    const handleRedirect = () => {
+        router.push('/dashboard/alertMap');
+    };
+
+    const handleGuardDashboard = () => {
+        router.push('/guard');
+    };
+
     return (
         <ProtectedRoute>
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-white rounded-lg shadow-lg p-6 w-100">
+                    <div className="flex items-center mb-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-800">Smart Navigation</h3>
+                    </div>
+                    <p className="text-gray-600">
+                        AI-powered route optimization that finds the fastest path to your destination,
+                        considering real-time foot traffic and accessibility needs.
+                    </p>
+                    <button
+                        className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                        onClick={handleRedirect}
+                    >
+                        Go to Alert Map
+                    </button>
+                </div>
+
+                {/* Guard Dashboard Card - Show only for guards */}
+                {user?.role === 'guard' && (
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-100">
+                        <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                <span className="text-2xl">🛡️</span>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800">Guard Dashboard</h3>
+                        </div>
+                        <p className="text-gray-600">
+                            Monitor active SOS alerts and respond to emergencies in your area.
+                            Track your location and help people in need.
+                        </p>
+                        <button
+                            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                            onClick={handleGuardDashboard}
+                        >
+                            Open Guard Dashboard
+                        </button>
+                    </div>
+                )}
+            </div>
+            {/* Emergency SOS Button - Fixed position */}
             <SOSButton />
         </ProtectedRoute>
-    )
+    );
 }
-

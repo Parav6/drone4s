@@ -3,34 +3,36 @@
 import ProtectedRoute from '../../components/ProtectedRoute';
 import UserManagement from '../../components/UserManagement';
 import { useAuth } from '../../hooks/useAuth';
+import { useRouter } from 'next/navigation';
 
 export default function AdminPanel() {
     const { user, isAdmin, canManageUsers } = useAuth();
+    const router = useRouter();
 
-    if (!isAdmin) {
-        return (
-            <ProtectedRoute>
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                    <div className="bg-white p-8 rounded-lg shadow-md text-center">
-                        <div className="text-red-500 text-6xl mb-4">🚫</div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-                        <p className="text-gray-600 mb-4">
-                            You need administrator privileges to access this page.
-                        </p>
-                        <p className="text-sm text-gray-500">
-                            Current role: <span className="font-medium">{user?.role || 'user'}</span>
-                        </p>
-                    </div>
-                </div>
-            </ProtectedRoute>
-        );
-    }
+    // if (!isAdmin) {
+    //     return (
+    //         <ProtectedRoute>
+    //             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    //                 <div className="bg-white p-8 rounded-lg shadow-md text-center">
+    //                     <div className="text-red-500 text-6xl mb-4">🚫</div>
+    //                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+    //                     <p className="text-gray-600 mb-4">
+    //                         You need administrator privileges to access this page.
+    //                     </p>
+    //                     <p className="text-sm text-gray-500">
+    //                         Current role: <span className="font-medium">{user?.role || 'user'}</span>
+    //                     </p>
+    //                 </div>
+    //             </div>
+    //         </ProtectedRoute>
+    //     );
+    // }
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-900">
                 {/* Header */}
-                <div className="bg-white shadow">
+                <div className="bg-gray-800 shadow border-b border-gray-600">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center py-6">
                             <div>
@@ -151,6 +153,38 @@ export default function AdminPanel() {
                                         </p>
                                         <div className="flex items-center text-green-600">
                                             <span className="text-sm">✅ Active</span>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                                        onClick={() => router.push('/admin/alertMap')}
+                                    >
+                                        <h3 className="font-medium text-gray-900 mb-2">Verify Alerts</h3>
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Verify the alerts and set priorities.
+                                        </p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-green-600">✅ Active</span>
+                                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                View Alerts →
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                                        onClick={() => router.push('/guard')}
+                                    >
+                                        <h3 className="font-medium text-gray-900 mb-2">Guard Dashboard</h3>
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Access guard dashboard to monitor and respond to SOS alerts.
+                                        </p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-green-600">✅ Active</span>
+                                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                Access Dashboard →
+                                            </button>
                                         </div>
                                     </div>
 

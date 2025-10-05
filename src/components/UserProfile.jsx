@@ -22,7 +22,7 @@ const UserProfile = () => {
     }
 
     return (
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="max-w-md mx-auto bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-600">
             <div className="px-6 py-4">
                 <div className="flex items-center">
                     {user.photoURL && (
@@ -33,35 +33,35 @@ const UserProfile = () => {
                         />
                     )}
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900">
+                        <h2 className="text-xl font-bold text-gray-100">
                             {user.displayName || 'Anonymous User'}
                         </h2>
-                        <p className="text-gray-600">{user.email}</p>
+                        <p className="text-gray-300">{user.email}</p>
                     </div>
                 </div>
 
                 <div className="mt-4 space-y-2">
                     <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">Role:</span>
+                        <span className="font-medium text-gray-200">Role:</span>
                         <span className={`text-sm px-2 py-1 rounded-full ${user.role === 'admin'
-                                ? 'bg-red-100 text-red-800'
-                                : user.role === 'moderator'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-green-100 text-green-800'
+                            ? 'bg-red-100 text-red-800'
+                            : user.role === 'moderator'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-green-100 text-green-800'
                             }`}>
                             {user.role || 'user'}
                         </span>
                     </div>
 
                     <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">User ID:</span>
-                        <span className="text-gray-600 text-sm font-mono">
+                        <span className="font-medium text-gray-200">User ID:</span>
+                        <span className="text-gray-300 text-sm font-mono">
                             {user.uid.substring(0, 8)}...
                         </span>
                     </div>
 
                     <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">Email Verified:</span>
+                        <span className="font-medium text-gray-200">Email Verified:</span>
                         <span className={`text-sm ${user.emailVerified ? 'text-green-600' : 'text-red-600'}`}>
                             {user.emailVerified ? 'Yes' : 'No'}
                         </span>
@@ -69,8 +69,8 @@ const UserProfile = () => {
 
                     {user.createdAt && (
                         <div className="flex justify-between">
-                            <span className="font-medium text-gray-700">Member Since:</span>
-                            <span className="text-gray-600 text-sm">
+                            <span className="font-medium text-gray-200">Member Since:</span>
+                            <span className="text-gray-300 text-sm">
                                 {new Date(user.createdAt).toLocaleDateString()}
                             </span>
                         </div>
@@ -78,8 +78,8 @@ const UserProfile = () => {
 
                     {user.lastLogin && (
                         <div className="flex justify-between">
-                            <span className="font-medium text-gray-700">Last Login:</span>
-                            <span className="text-gray-600 text-sm">
+                            <span className="font-medium text-gray-200">Last Login:</span>
+                            <span className="text-gray-300 text-sm">
                                 {new Date(user.lastLogin).toLocaleDateString()}
                             </span>
                         </div>

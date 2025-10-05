@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FirebaseProvider } from "../context/Firebase";
 import Navbar from "@/components/ui/Navbar";
+// import SOSGuard from "@/components/SOSGuard";
+import CheckSOSActive from "@/components/CheckSOSActive";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +28,7 @@ export default function RootLayout({ children }) {
       >
         <FirebaseProvider>
           <Navbar />
+          <CheckSOSActive />
           {children}
         </FirebaseProvider>
       </body>

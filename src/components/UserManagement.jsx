@@ -59,7 +59,7 @@ const UserManagement = () => {
     const usersList = Object.values(users).filter(u => u.uid !== user?.uid);
 
     return (
-        <div className="bg-white rounded-lg shadow-md">
+        <div className="bg-gray-800 rounded-lg shadow-md border border-gray-600">
             <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">User Management</h2>
                 <p className="text-sm text-gray-600">Manage user roles and permissions</p>
@@ -77,7 +77,7 @@ const UserManagement = () => {
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-gray-700">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         User
@@ -96,7 +96,7 @@ const UserManagement = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-gray-800 divide-y divide-gray-600">
                                 {usersList.map((userData) => (
                                     <tr key={userData.uid}>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -113,7 +113,7 @@ const UserManagement = () => {
                                                         {userData.displayName || 'Anonymous'}
                                                     </div>
                                                     <div className="text-sm text-gray-500">
-                                                        {userData.uid.substring(0, 8)}...
+                                                        {userData.uid ? `${userData.uid.substring(0, 8)}...` : 'N/A'}
                                                     </div>
                                                 </div>
                                             </div>
@@ -123,9 +123,11 @@ const UserManagement = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${userData.role === 'admin'
-                                                    ? 'bg-red-100 text-red-800'
-                                                    : userData.role === 'moderator'
-                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                ? 'bg-red-100 text-red-800'
+                                                : userData.role === 'moderator'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : userData.role === 'guard'
+                                                        ? 'bg-blue-100 text-blue-800'
                                                         : 'bg-green-100 text-green-800'
                                                 }`}>
                                                 {userData.role || 'user'}
@@ -144,6 +146,7 @@ const UserManagement = () => {
                                                 className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             >
                                                 <option value="user">User</option>
+                                                <option value="guard">Guard</option>
                                                 <option value="moderator">Moderator</option>
                                                 <option value="admin">Admin</option>
                                             </select>
@@ -159,6 +162,7 @@ const UserManagement = () => {
                     <h3 className="text-sm font-medium text-blue-800 mb-2">Role Descriptions:</h3>
                     <ul className="text-sm text-blue-700 space-y-1">
                         <li><strong>User:</strong> Default role with basic access</li>
+                        <li><strong>Guard:</strong> Security personnel who can respond to SOS alerts</li>
                         <li><strong>Moderator:</strong> Can moderate content and manage users</li>
                         <li><strong>Admin:</strong> Full access to all features and user management</li>
                     </ul>

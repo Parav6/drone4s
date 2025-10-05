@@ -172,6 +172,19 @@ const Navbar = () => {
                                 Admin
                             </Link>
                         )}
+
+                        {/* Guard Dashboard link - only show for guards */}
+                        {user?.role === 'guard' && (
+                            <Link
+                                href="/guard"
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive("/guard")
+                                    ? "text-white bg-gray-700"
+                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
+                                    }`}
+                            >
+                                🛡️ Guard Dashboard
+                            </Link>
+                        )}
                     </div>
 
                     {/* User Section */}
@@ -209,7 +222,7 @@ const Navbar = () => {
 
                                 {/* Dropdown Menu */}
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                    <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-md shadow-lg border border-gray-600 z-50">
                                         <div className="py-2">
                                             {/* User Info */}
                                             <div className="px-4 py-2 border-b border-gray-100">
@@ -237,7 +250,9 @@ const Navbar = () => {
                                                                 ? 'bg-red-100 text-red-800'
                                                                 : user.role === 'moderator'
                                                                     ? 'bg-yellow-100 text-yellow-800'
-                                                                    : 'bg-green-100 text-green-800'
+                                                                    : user.role === 'guard'
+                                                                        ? 'bg-blue-100 text-blue-800'
+                                                                        : 'bg-green-100 text-green-800'
                                                                 }`}>
                                                                 {user.role}
                                                             </span>
@@ -250,17 +265,29 @@ const Navbar = () => {
                                             <Link
                                                 href="/dashboard"
                                                 onClick={() => setIsDropdownOpen(false)}
-                                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 border-b border-gray-100"
+                                                className="w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center space-x-2 border-b border-gray-600"
                                             >
                                                 <DashboardIcon />
                                                 <span>Dashboard</span>
                                             </Link>
 
+                                            {/* Guard Dashboard Link - Only for Guards */}
+                                            {user?.role === 'guard' && (
+                                                <Link
+                                                    href="/guard"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center space-x-2 border-b border-gray-600"
+                                                >
+                                                    <span className="text-blue-400">🛡️</span>
+                                                    <span>Guard Dashboard</span>
+                                                </Link>
+                                            )}
+
                                             {/* About Link - Mobile Only */}
                                             <Link
                                                 href="/about"
                                                 onClick={() => setIsDropdownOpen(false)}
-                                                className="md:hidden w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 border-b border-gray-100"
+                                                className="md:hidden w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center space-x-2 border-b border-gray-600"
                                             >
                                                 <AboutIcon />
                                                 <span>About</span>

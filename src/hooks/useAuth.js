@@ -19,6 +19,7 @@ export const useAuth = () => {
         isAuthenticated,
         isAdmin,
         isModerator,
+        isGuard,
         updateUserRole,
         getUserById,
         getAllUsers
@@ -88,10 +89,12 @@ export const useAuth = () => {
         switch (permission) {
             case 'admin':
                 return userRole === 'admin';
+            case 'guard':
+                return userRole === 'guard';
             case 'moderator':
                 return ['admin', 'moderator'].includes(userRole);
             case 'user':
-                return ['admin', 'moderator', 'user'].includes(userRole);
+                return ['admin', 'moderator', 'guard', 'user'].includes(userRole);
             default:
                 return false;
         }
@@ -122,6 +125,7 @@ export const useAuth = () => {
         isAuthenticated,
         isAdmin,
         isModerator,
+        isGuard,
 
         // Enhanced methods
         signIn,

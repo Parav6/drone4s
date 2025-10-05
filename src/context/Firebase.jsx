@@ -33,7 +33,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(app);
 const database = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
@@ -312,7 +312,8 @@ export const FirebaseProvider = (props) => {
         // Utility methods
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
-        isModerator: user?.role === 'moderator' || user?.role === 'admin'
+        isModerator: user?.role === 'moderator' || user?.role === 'admin',
+        isGuard: user?.role === 'guard'
     };
 
     return (
