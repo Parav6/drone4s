@@ -22,8 +22,12 @@ export default function Dashboard() {
         router.push('/sos');
     };
 
-    const handleLocationsRedirect = () => {
-        router.push('/locations');
+    const handleParkingRedirect = () => {
+        router.push('/dashboard/parking');
+    };
+
+    const handleGarbageRedirect = () => {
+        router.push('/dashboard/garbage'); // or wherever garbage monitoring should go
     };
 
     return (
@@ -68,7 +72,7 @@ export default function Dashboard() {
                                     Check live parking status across the campus. See which slots are free and which are occupied, saving time and avoiding hassle.
                                 </p>
                                 <button
-                                    onClick={handleLocationsRedirect}
+                                    onClick={handleParkingRedirect}
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-semibold shadow-lg text-sm"
                                 >
                                     Check Parking
@@ -89,7 +93,7 @@ export default function Dashboard() {
                                     Monitor garbage containers in real-time. Know which are full and which are empty to help maintain a clean and sustainable campus environment.
                                 </p>
                                 <button
-                                    onClick={handleLocationsRedirect}
+                                    onClick={handleGarbageRedirect}
                                     className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-yellow-700 hover:to-orange-700 transition-all duration-300 font-semibold shadow-lg text-sm"
                                 >
                                     Monitor Status

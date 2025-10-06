@@ -190,7 +190,7 @@ const AboutPage = () => {
                             <Link href="/about" className="text-gray-400 hover:text-white transition-colors">About</Link>
                             <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</Link>
                             <Link href="/sos" className="text-gray-400 hover:text-white transition-colors">SOS</Link>
-                            <Link href="/locations" className="text-gray-400 hover:text-white transition-colors">Locations</Link>
+                            <Link href="/dashboard/parking" className="text-gray-400 hover:text-white transition-colors">Parking</Link>
                         </div>
                     </div>
                 </div>
