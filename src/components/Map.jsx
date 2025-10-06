@@ -748,33 +748,10 @@ const Map = ({
                     {isLocationEnabled && !isTracking && (
                         <button onClick={startTracking} style={controlBtnStyle}>Start Tracking</button>
                     )}
-                    {isLocationEnabled && isTracking && (
-                        <button onClick={stopTracking} style={controlBtnStyle}>Stop Tracking</button>
-                    )}
                     {isLocationEnabled && !isFollowing && (
                         <button onClick={followUserAgain} style={controlBtnStyle}>Recenter</button>
                     )}
-                    {latitude && longitude && (
-                        <div style={coordStyle}>Lat: {latitude.toFixed(5)}<br />Lng: {longitude.toFixed(5)}</div>
-                    )}
-                    {locationError && <div style={{ ...coordStyle, background: '#8b0000' }}>Loc Err</div>}
 
-                    {/* Enhanced real-time tracking status (legacy) */}
-                    {enableRealTimeTracking && realTimeTracking && (
-                        <div style={coordStyle}>
-                            {realTimeTracking.isPublishing ? '🟢 Live Sharing' : '🔴 Not Sharing'}
-                            <br />Connected: {(realTimeTracking.connectedDevices?.length || 0) + 1} devices
-                            <br />Active: {realTimeTracking.connectedDevices?.filter(d => (d.timeSinceActivity || 0) < 5000).length || 0} devices
-                        </div>
-                    )}
-
-                    {/* User location tracking status (new) */}
-                    {publishCurrentUser && (
-                        <div style={coordStyle}>
-                            {userLocationTracking.isPublishing ? '🟢 Sharing Location' : '🔴 Not Sharing'}
-                            <br />User ID: {userLocationTracking.currentUserId?.substring(0, 8) || 'Not logged in'}
-                        </div>
-                    )}
 
                     {/* Additional markers count */}
                     {additionalMarkers.length > 0 && (

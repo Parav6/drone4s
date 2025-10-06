@@ -232,31 +232,6 @@ export default function HomePage() {
 
   return (
     <div style={{ height: "100vh", width: "100%", position: "relative" }}>
-      {/* Location Display */}
-      {currentLocation && (
-        <div
-          style={{
-            position: "absolute",
-            top: "16px",
-            left: "16px",
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            fontSize: "0.875rem",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-            maxWidth: "220px",
-            zIndex: 10,
-            border: "2px solid #2563eb",
-          }}
-        >
-          <div style={{ color: "#60a5fa", fontWeight: "bold", marginBottom: "4px" }}>📍 Your Location:</div>
-          <div style={{ color: "#ffffff", marginBottom: "2px" }}>Lat: {currentLocation.lat.toFixed(6)}</div>
-          <div style={{ color: "#ffffff", marginBottom: "4px" }}>Lng: {currentLocation.lng.toFixed(6)}</div>
-          <div style={{ color: "#22c55e", fontWeight: "bold" }}>🟢 Live Tracking Active</div>
-        </div>
-      )}
-
       {/* Alert Legend */}
       <div
         style={{
@@ -330,7 +305,7 @@ export default function HomePage() {
         }}
         onClick={() => setShowForm(true)}
       >
-        Submit Response
+        Flag an Alert or Issue for this location
       </button>
       {showForm && (
         <>

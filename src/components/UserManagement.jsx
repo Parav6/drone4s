@@ -41,8 +41,8 @@ const UserManagement = () => {
 
     if (!isAdmin) {
         return (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-800">Access denied. Admin privileges required.</p>
+            <div className="p-4 bg-red-900/20 border border-red-700 rounded-md">
+                <p className="text-red-300">Access denied. Admin privileges required.</p>
             </div>
         );
     }
@@ -50,8 +50,8 @@ const UserManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                <span className="ml-2">Loading users...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                <span className="ml-2 text-gray-300">Loading users...</span>
             </div>
         );
     }
@@ -59,39 +59,39 @@ const UserManagement = () => {
     const usersList = Object.values(users).filter(u => u.uid !== user?.uid);
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-md border border-gray-600">
-            <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">User Management</h2>
-                <p className="text-sm text-gray-600">Manage user roles and permissions</p>
+        <div>
+            <div className="px-6 py-4 border-b border-gray-600">
+                <h2 className="text-xl font-semibold text-gray-100">User Management</h2>
+                <p className="text-sm text-gray-300">Manage user roles and permissions</p>
             </div>
 
             {error && (
-                <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-sm text-red-600">{error}</p>
+                <div className="mx-6 mt-4 p-3 bg-red-900/20 border border-red-700 rounded-md">
+                    <p className="text-sm text-red-300">{error}</p>
                 </div>
             )}
 
             <div className="p-6">
                 {usersList.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No other users found</p>
+                    <p className="text-gray-400 text-center py-8">No other users found</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-700">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         User
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         Email
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         Role
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         Joined
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
@@ -109,16 +109,16 @@ const UserManagement = () => {
                                                     />
                                                 )}
                                                 <div>
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-gray-100">
                                                         {userData.displayName || 'Anonymous'}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">
+                                                    <div className="text-sm text-gray-400">
                                                         {userData.uid ? `${userData.uid.substring(0, 8)}...` : 'N/A'}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
                                             {userData.email}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -133,7 +133,7 @@ const UserManagement = () => {
                                                 {userData.role || 'user'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                             {userData.createdAt
                                                 ? new Date(userData.createdAt).toLocaleDateString()
                                                 : 'Unknown'
@@ -143,11 +143,10 @@ const UserManagement = () => {
                                             <select
                                                 value={userData.role || 'user'}
                                                 onChange={(e) => handleRoleChange(userData.uid, e.target.value)}
-                                                className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="bg-gray-700 border border-gray-600 text-gray-100 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             >
                                                 <option value="user">User</option>
                                                 <option value="guard">Guard</option>
-                                                <option value="moderator">Moderator</option>
                                                 <option value="admin">Admin</option>
                                             </select>
                                         </td>
@@ -158,12 +157,11 @@ const UserManagement = () => {
                     </div>
                 )}
 
-                <div className="mt-6 p-4 bg-blue-50 rounded-md">
-                    <h3 className="text-sm font-medium text-blue-800 mb-2">Role Descriptions:</h3>
-                    <ul className="text-sm text-blue-700 space-y-1">
+                <div className="mt-6 p-4 bg-blue-900/20 rounded-md border border-blue-700">
+                    <h3 className="text-sm font-medium text-blue-300 mb-2">Role Descriptions:</h3>
+                    <ul className="text-sm text-blue-200 space-y-1">
                         <li><strong>User:</strong> Default role with basic access</li>
                         <li><strong>Guard:</strong> Security personnel who can respond to SOS alerts</li>
-                        <li><strong>Moderator:</strong> Can moderate content and manage users</li>
                         <li><strong>Admin:</strong> Full access to all features and user management</li>
                     </ul>
                 </div>

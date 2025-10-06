@@ -12,15 +12,15 @@ export default function AdminPanel() {
     // if (!isAdmin) {
     //     return (
     //         <ProtectedRoute>
-    //             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-    //                 <div className="bg-white p-8 rounded-lg shadow-md text-center">
+    //             <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    //                 <div className="bg-gray-800 p-8 rounded-lg shadow-md text-center border border-gray-700">
     //                     <div className="text-red-500 text-6xl mb-4">🚫</div>
-    //                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-    //                     <p className="text-gray-600 mb-4">
+    //                     <h1 className="text-2xl font-bold text-gray-100 mb-2">Access Denied</h1>
+    //                     <p className="text-gray-300 mb-4">
     //                         You need administrator privileges to access this page.
     //                     </p>
-    //                     <p className="text-sm text-gray-500">
-    //                         Current role: <span className="font-medium">{user?.role || 'user'}</span>
+    //                     <p className="text-sm text-gray-400">
+    //                         Current role: <span className="font-medium text-gray-200">{user?.role || 'user'}</span>
     //                     </p>
     //                 </div>
     //             </div>
@@ -30,210 +30,22 @@ export default function AdminPanel() {
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-900">
-                {/* Header */}
-                <div className="bg-gray-800 shadow border-b border-gray-600">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center py-6">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    Admin Panel
-                                </h1>
-                                <p className="text-gray-600">
-                                    Manage users and system settings
-                                </p>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <span className="text-sm text-gray-500">
-                                    Welcome, {user?.displayName || user?.email}
-                                </span>
-                                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
-                                    Admin
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <div className="px-4 py-6 sm:px-0">
-                        {/* Admin Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-5">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                                <span className="text-white text-sm font-medium">👥</span>
-                                            </div>
-                                        </div>
-                                        <div className="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Total Users
-                                                </dt>
-                                                <dd className="text-lg font-medium text-gray-900">
-                                                    Loading...
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-5">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                                <span className="text-white text-sm font-medium">✅</span>
-                                            </div>
-                                        </div>
-                                        <div className="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Active Users
-                                                </dt>
-                                                <dd className="text-lg font-medium text-gray-900">
-                                                    Loading...
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-5">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                                <span className="text-white text-sm font-medium">👑</span>
-                                            </div>
-                                        </div>
-                                        <div className="ml-5 w-0 flex-1">
-                                            <dl>
-                                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Admins
-                                                </dt>
-                                                <dd className="text-lg font-medium text-gray-900">
-                                                    Loading...
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div className="min-h-screen bg-gray-900 text-gray-100">
+                <div className="container mx-auto px-6 py-12">
+                    <div className="max-w-6xl mx-auto">
+                        {/* Verify Alerts Button */}
+                        <div className="flex justify-center mb-12">
+                            <button
+                                onClick={() => router.push('/admin/alertMap')}
+                                className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-lg hover:from-red-700 hover:to-pink-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105"
+                            >
+                                🚨 Verify Alerts
+                            </button>
                         </div>
 
                         {/* User Management Section */}
-                        <UserManagement />
-
-                        {/* Admin Features */}
-                        <div className="mt-8 bg-white rounded-lg shadow-md">
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h2 className="text-xl font-semibold text-gray-900">Admin Features</h2>
-                            </div>
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-4 border border-gray-200 rounded-lg">
-                                        <h3 className="font-medium text-gray-900 mb-2">User Management</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            View and manage all registered users, change roles and permissions.
-                                        </p>
-                                        <div className="flex items-center text-green-600">
-                                            <span className="text-sm">✅ Active</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 border border-gray-200 rounded-lg">
-                                        <h3 className="font-medium text-gray-900 mb-2">Role Management</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Assign roles (user, moderator, admin) to control access levels.
-                                        </p>
-                                        <div className="flex items-center text-green-600">
-                                            <span className="text-sm">✅ Active</span>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
-                                        onClick={() => router.push('/admin/alertMap')}
-                                    >
-                                        <h3 className="font-medium text-gray-900 mb-2">Verify Alerts</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Verify the alerts and set priorities.
-                                        </p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-green-600">✅ Active</span>
-                                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                View Alerts →
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
-                                        onClick={() => router.push('/guard')}
-                                    >
-                                        <h3 className="font-medium text-gray-900 mb-2">Guard Dashboard</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Access guard dashboard to monitor and respond to SOS alerts.
-                                        </p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-green-600">✅ Active</span>
-                                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                Access Dashboard →
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 border border-gray-200 rounded-lg">
-                                        <h3 className="font-medium text-gray-900 mb-2">Analytics Dashboard</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            View user engagement metrics and system statistics.
-                                        </p>
-                                        <div className="flex items-center text-yellow-600">
-                                            <span className="text-sm">🚧 Coming Soon</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 border border-gray-200 rounded-lg">
-                                        <h3 className="font-medium text-gray-900 mb-2">Content Moderation</h3>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Moderate user-generated content and manage reports.
-                                        </p>
-                                        <div className="flex items-center text-yellow-600">
-                                            <span className="text-sm">🚧 Coming Soon</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Database Structure Info */}
-                        <div className="mt-8 bg-blue-50 rounded-lg p-6">
-                            <h3 className="text-lg font-medium text-blue-900 mb-4">
-                                Firebase Realtime Database Structure
-                            </h3>
-                            <div className="bg-white rounded-md p-4 font-mono text-sm">
-                                <div className="text-gray-600">
-                                    {`{
-  "users": {
-    "user_uid": {
-      "uid": "string",
-      "email": "string",
-      "displayName": "string",
-      "photoURL": "string",
-      "emailVerified": boolean,
-      "role": "user|moderator|admin",
-      "createdAt": timestamp,
-      "lastLogin": timestamp
-    }
-  }
-}`}
-                                </div>
-                            </div>
+                        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
+                            <UserManagement />
                         </div>
                     </div>
                 </div>

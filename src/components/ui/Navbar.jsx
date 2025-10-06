@@ -176,8 +176,8 @@ const Navbar = () => {
                         {/* Guard Dashboard link - only show for guards */}
                         {user?.role === 'guard' && (
                             <Link
-                                href="/guard"
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive("/guard")
+                                href="/guardDashboard"
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive("/guardDashboard")
                                     ? "text-white bg-gray-700"
                                     : "text-gray-300 hover:text-white hover:bg-gray-700"
                                     }`}
@@ -225,7 +225,7 @@ const Navbar = () => {
                                     <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-md shadow-lg border border-gray-600 z-50">
                                         <div className="py-2">
                                             {/* User Info */}
-                                            <div className="px-4 py-2 border-b border-gray-100">
+                                            <div className="px-4 py-2 border-b border-gray-600">
                                                 <div className="flex items-center space-x-3">
                                                     {user.photoURL ? (
                                                         <img
@@ -234,15 +234,15 @@ const Navbar = () => {
                                                             className="w-10 h-10 rounded-full"
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-lg font-medium">
+                                                        <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-lg font-medium">
                                                             {user.displayName?.[0] || user.email?.[0] || 'U'}
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">
+                                                        <p className="text-sm font-medium text-white">
                                                             {user.displayName || 'Anonymous User'}
                                                         </p>
-                                                        <p className="text-xs text-gray-500">
+                                                        <p className="text-xs text-gray-300">
                                                             {user.email}
                                                         </p>
                                                         {user.role && (
@@ -271,10 +271,22 @@ const Navbar = () => {
                                                 <span>Dashboard</span>
                                             </Link>
 
+                                            {/* Admin Dashboard Link - Only for Admins */}
+                                            {user?.role === 'admin' && (
+                                                <Link
+                                                    href="/admin"
+                                                    onClick={() => setIsDropdownOpen(false)}
+                                                    className="w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center space-x-2 border-b border-gray-600"
+                                                >
+                                                    <span className="text-red-400">⚙️</span>
+                                                    <span>Admin Dashboard</span>
+                                                </Link>
+                                            )}
+
                                             {/* Guard Dashboard Link - Only for Guards */}
                                             {user?.role === 'guard' && (
                                                 <Link
-                                                    href="/guard"
+                                                    href="/guardDashboard"
                                                     onClick={() => setIsDropdownOpen(false)}
                                                     className="w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center space-x-2 border-b border-gray-600"
                                                 >
@@ -296,7 +308,7 @@ const Navbar = () => {
                                             {/* Logout Button */}
                                             <button
                                                 onClick={handleSignOut}
-                                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2"
+                                                className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors flex items-center space-x-2"
                                             >
                                                 <PowerOffIcon />
                                                 <span>Sign Out</span>

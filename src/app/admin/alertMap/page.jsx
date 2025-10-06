@@ -324,29 +324,37 @@ export default function AdminAlertMap() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <div className="text-red-500 text-6xl mb-4">🚫</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-          <p className="text-gray-600">You need administrator privileges to access this page.</p>
+      <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center">
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-red-600/20"></div>
+          <div className="relative bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-700/50 text-center shadow-2xl">
+            <div className="text-red-400 text-6xl mb-4">🚫</div>
+            <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
+            <p className="text-gray-300">You need administrator privileges to access this page.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900 text-gray-100">
+      {/* Background Effects - Behind everything */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-600/10 to-gray-800/10 -z-10"></div>
+
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="relative bg-gray-800/30 backdrop-blur-sm border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Alert Verification Map</h1>
-              <p className="text-gray-600">Verify and manage emergency alerts</p>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+                Alert Verification Map
+              </h1>
+              <p className="text-gray-300 mt-2">Verify and manage emergency alerts across campus</p>
             </div>
             <button
               onClick={() => router.push('/admin')}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+              className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-3 rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105"
             >
               ← Back to Admin Panel
             </button>
@@ -354,57 +362,65 @@ export default function AdminAlertMap() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="relative max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Alerts List */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-2xl">
+              <div className="px-6 py-5 border-b border-gray-700/50">
+                <h2 className="text-xl font-bold text-white flex items-center">
+                  <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full mr-3"></div>
                   Alerts ({alerts.length})
                 </h2>
               </div>
               <div className="max-h-96 overflow-y-auto">
                 {loading ? (
-                  <div className="p-6 text-center text-gray-500">Loading alerts...</div>
+                  <div className="p-8 text-center text-gray-400">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                    Loading alerts...
+                  </div>
                 ) : alerts.length === 0 ? (
-                  <div className="p-6 text-center text-gray-500">No alerts found</div>
+                  <div className="p-8 text-center text-gray-400">
+                    <div className="text-4xl mb-4">📭</div>
+                    No alerts found
+                  </div>
                 ) : (
                   alerts.map((alert) => (
                     <div
                       key={alert.id}
-                      className={`p-4 border-b border-gray-200 last:border-b-0 cursor-pointer transition-all duration-200 ${selectedAlertId === alert.id
-                          ? 'bg-blue-50 border-l-4 border-l-blue-500'
-                          : 'hover:bg-gray-50'
+                      className={`p-5 border-b border-gray-700/50 last:border-b-0 cursor-pointer transition-all duration-300 hover:bg-gray-700/30 ${selectedAlertId === alert.id
+                        ? 'bg-blue-900/30 border-l-4 border-l-blue-400'
+                        : ''
                         }`}
                       onClick={() => handleAlertClick(alert)}
                     >
-                      <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center">
                           <div
-                            className="w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                            className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
                             style={{
                               backgroundColor: !alert.isVerified ? '#6b7280' :
                                 alert.priority === 'high' ? '#dc2626' :
-                                  alert.priority === 'medium' ? '#f59e0b' : '#eab308'
+                                  alert.priority === 'medium' ? '#f59e0b' : '#eab308',
+                              boxShadow: selectedAlertId === alert.id ? '0 0 0 2px rgba(59, 130, 246, 0.4)' : 'none'
                             }}
                           ></div>
-                          <h3 className="font-medium text-gray-900 text-sm">{alert.problem}</h3>
+                          <h3 className="font-semibold text-white text-sm">{alert.problem}</h3>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${alert.isVerified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${alert.isVerified ? 'bg-green-900/50 text-green-300 border border-green-500/30' : 'bg-gray-700/50 text-gray-300 border border-gray-600/30'
                           }`}>
                           {alert.isVerified ? '✅ Verified' : '⏳ Pending'}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-3">{alert.description}</p>
+                      <p className="text-sm text-gray-300 mb-4 leading-relaxed">{alert.description}</p>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <label className="text-xs text-gray-500">Priority:</label>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                          <label className="text-xs text-gray-400 font-medium">Priority:</label>
                           <select
                             value={alert.priority || 'low'}
                             onChange={(e) => handlePriorityChange(alert.id, e.target.value)}
-                            className="text-xs border border-gray-300 rounded px-2 py-1"
+                            className="text-xs bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-1 text-white focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-colors"
                             style={{
                               color: alert.priority === 'high' ? '#dc2626' :
                                 alert.priority === 'medium' ? '#f59e0b' : '#eab308',
@@ -421,7 +437,7 @@ export default function AdminAlertMap() {
                           {!alert.isVerified && (
                             <button
                               onClick={() => handleVerify(alert.id)}
-                              className="flex-1 bg-green-600 text-white text-xs py-1 px-3 rounded hover:bg-green-700 transition-colors"
+                              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs py-2 px-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-semibold shadow-md hover:shadow-lg hover:scale-105"
                             >
                               ✓ Verify
                             </button>
@@ -432,17 +448,17 @@ export default function AdminAlertMap() {
                                 removeAlert(alert.id);
                               }
                             }}
-                            className="flex-1 bg-red-600 text-white text-xs py-1 px-3 rounded hover:bg-red-700 transition-colors"
+                            className="flex-1 bg-gradient-to-r from-red-600 to-pink-600 text-white text-xs py-2 px-3 rounded-lg hover:from-red-700 hover:to-pink-700 transition-all duration-300 font-semibold shadow-md hover:shadow-lg hover:scale-105"
                           >
                             🗑️ Remove
                           </button>
                         </div>
 
-                        <div className="text-xs text-gray-500">
-                          <div><strong style={{ color: '#374151' }}>User:</strong> {alert.userName || 'Unknown'}</div>
-                          <div><strong style={{ color: '#374151' }}>Time:</strong> {new Date(alert.timestamp).toLocaleString()}</div>
+                        <div className="text-xs text-gray-400 bg-gray-800/30 p-3 rounded-lg border border-gray-700/30">
+                          <div className="mb-1"><strong className="text-gray-300">User:</strong> {alert.userName || 'Unknown'}</div>
+                          <div className="mb-1"><strong className="text-gray-300">Time:</strong> {new Date(alert.timestamp).toLocaleString()}</div>
                           {alert.latitude && alert.longitude && (
-                            <div><strong style={{ color: '#374151' }}>Location:</strong> {alert.latitude.toFixed(4)}, {alert.longitude.toFixed(4)}</div>
+                            <div><strong className="text-gray-300">Location:</strong> {alert.latitude.toFixed(4)}, {alert.longitude.toFixed(4)}</div>
                           )}
                         </div>
                       </div>
@@ -455,42 +471,45 @@ export default function AdminAlertMap() {
 
           {/* Map */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">Alert Locations</h2>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-2xl">
+              <div className="px-6 py-5 border-b border-gray-700/50">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full mr-3"></div>
+                  Alert Locations
+                </h2>
                 <div className="flex flex-wrap gap-4 text-xs">
-                  <div className="flex items-center">
+                  <div className="flex items-center bg-gray-700/30 px-3 py-2 rounded-lg border border-gray-600/30">
                     <div className="w-3 h-3 rounded-full bg-gray-500 mr-2"></div>
-                    <span style={{ color: '#6b7280', fontWeight: 'bold' }}>Unverified</span>
+                    <span className="text-gray-300 font-semibold">Unverified</span>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center bg-gray-700/30 px-3 py-2 rounded-lg border border-gray-600/30">
                     <div className="w-3 h-3 rounded-full bg-red-600 mr-2"></div>
-                    <span style={{ color: '#dc2626', fontWeight: 'bold' }}>High Priority</span>
+                    <span className="text-red-400 font-semibold">High Priority</span>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center bg-gray-700/30 px-3 py-2 rounded-lg border border-gray-600/30">
                     <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
-                    <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>Medium Priority</span>
+                    <span className="text-orange-400 font-semibold">Medium Priority</span>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center bg-gray-700/30 px-3 py-2 rounded-lg border border-gray-600/30">
                     <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                    <span style={{ color: '#eab308', fontWeight: 'bold' }}>Low Priority</span>
+                    <span className="text-yellow-400 font-semibold">Low Priority</span>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center bg-gray-700/30 px-3 py-2 rounded-lg border border-gray-600/30">
                     <div className="w-3 h-3 rounded-full bg-blue-500 mr-2" style={{ boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.3)' }}></div>
-                    <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>Selected</span>
+                    <span className="text-blue-400 font-semibold">Selected</span>
                   </div>
                 </div>
               </div>
               <div style={{ height: "500px", width: "100%", position: "relative" }}>
                 {mapLoading ? (
-                  <div className="flex items-center justify-center h-full bg-gray-100">
+                  <div className="flex items-center justify-center h-full bg-gray-800/30 rounded-b-2xl">
                     <div className="text-center">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                      <p className="text-gray-600">Loading map...</p>
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                      <p className="text-gray-300">Loading map...</p>
                     </div>
                   </div>
                 ) : null}
-                <div id="map" style={{ height: "100%", width: "100%" }}></div>
+                <div id="map" style={{ height: "100%", width: "100%", borderRadius: "0 0 1rem 1rem" }}></div>
               </div>
             </div>
           </div>

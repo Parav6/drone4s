@@ -542,11 +542,11 @@ const SOS = () => {
                                     <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px', color: '#7c3aed' }}>
                                         🛡️ Guard Status
                                     </div>
-                                    
+
                                     {/* Debug Info */}
-                                    <div style={{ 
-                                        fontSize: '10px', 
-                                        color: '#666', 
+                                    <div style={{
+                                        fontSize: '10px',
+                                        color: '#666',
                                         marginBottom: '8px',
                                         padding: '4px',
                                         backgroundColor: '#f9f9f9',
@@ -706,7 +706,6 @@ const SOS = () => {
                             backgroundColor: '#fff',
                             animation: 'pulse 1s infinite'
                         }}></div>
-                        <span>🛡️ 2 Guards on way • ETA 5 min</span>
                     </div>
                 </div>                {/* Cancel SOS Confirmation Popup */}
                 {showCancelConfirmation && (
