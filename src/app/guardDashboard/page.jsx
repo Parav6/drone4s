@@ -83,6 +83,7 @@ const GuardDashboard = () => {
     // const additionalMarkers = useMemo(() => {
     //     const markers = [];
     //     if (victimLocation && activeSOS?.userId) {
+    //         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!v")
     //         markers.push({
     //             id: `victim_${activeSOS.userId}`,
     //             lat: victimLocation.lat,
@@ -92,6 +93,7 @@ const GuardDashboard = () => {
     //         });
     //     }
     //     if (guardLocation && user?.uid) {
+    //         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!g")
     //         markers.push({
     //             id: `guard_${user.uid}`,
     //             lat: guardLocation.lat,
@@ -118,11 +120,17 @@ const GuardDashboard = () => {
         try {
             // Clear old line
             if (polylineRef.current?.remove) {
-                polylineRef.current.remove();
+                try { polylineRef.current.remove(); } catch {}
+                polylineRef.current = null;
             }
-            const pathPoints = routePath && Array.isArray(routePath) && routePath.length > 1
-                ? routePath
-                : [guardLocation, victimLocation];
+
+            // Only draw if we have an API-provided route with > 1 points
+            const hasApiRoute = routePath && Array.isArray(routePath) && routePath.length > 1;
+            if (!hasApiRoute) {
+                return; // do not draw any straight fallback line
+            }
+
+            const pathPoints = routePath;
 
             // Try to create a polyline with Mappls SDK. Fallback safe try/catch.
             if (window?.mappls && window.mappls.Polyline) {
@@ -150,23 +158,41 @@ const GuardDashboard = () => {
     // When both coordinates are available, call Mappls Route Advanced API, log it, and decode to routePath
     useEffect(() => {
         const fetchRoute = async () => {
-            // if ( !guardLocation || !victimLocation) return;
+            if ( !guardLocation || !victimLocation) return;
             try {
-                // const start = { lat: guardLocation.lat, lon: guardLocation.lng };
-                // const end = { lat: victimLocation.lat, lon: victimLocation.lng };
-                const start ={lat:"29.86176", lon:" 77.89815"}
-                const end = {lat:"29.86282", lon:"77.89826"}
+                const start = { lat: guardLocation.lat, lon: guardLocation.lng };
+                const end = { lat: victimLocation.lat, lon: victimLocation.lng };
+                // const start ={lat:"29.86176", lon:" 77.89815"}
+                // const end = {lat:"29.86282", lon:"77.89826"}
                 console.log(start,end)
                 const url = `https://apis.mappls.com/advancedmaps/v1/f6cc67d011fd246c37345dbaac88f334/route_adv/driving/${start.lon},${start.lat};${end.lon},${end.lat}`;
-                const res = await fetch(url);
+                const res = await fetch('/api/distance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      start:start,
+                      end:end
+                    })
+                  })
+              
+                  if (!res.ok) {
+                    const errorText = await response.text();
+                    console.error('MapmyIndia API error:', res.status, errorText);
+                    return Response.json(
+                      { error: 'Failed to fetch route', details: errorText },
+                      { status: res.status }
+                    );
+                  }
                 let data = null;
-                try { data = await res.json();console.log(data) } catch {}
+                try { data = await res.json(); } catch {}
                 console.log("[ROUTE_API] URL:", url);
                 console.log("[ROUTE_API] status:", res.status, res.statusText);
                 console.log("[ROUTE_API] data:", data || '<non-json>');
                 try {
                     const route = data?.routes?.[0];
+                    console.log("routee!!!",route.geometry)
                     const encoded = route?.geometry;
+                    console.log(encoded)
                     if (encoded) {
                         const pairs = polyline.decode(encoded); // [[lat, lng], ...]
                         const path = pairs.map(([lat, lng]) => ({ lat, lng }));
@@ -202,8 +228,8 @@ const GuardDashboard = () => {
                     <Map
                         center={center}
                         zoom={16}
-                        followUser={false}
-                        publishCurrentUser={false}
+                        followUser={true}
+                        publishCurrentUser={true}
                         trackUserIds={victimUserId ? [victimUserId] : []}
                         // additionalMarkers={additionalMarkers}
                         onMapReady={(map) => setMapReady(map)}
