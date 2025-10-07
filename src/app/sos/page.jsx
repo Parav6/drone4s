@@ -15,6 +15,7 @@ const SOS = () => {
     const [showGuardStatus, setShowGuardStatus] = useState(false);
     const [uniqueDeviceId, setUniqueDeviceId] = useState(null);
     const [assignedGuardId, setAssignedGuardId] = useState(null);
+    const [currentTime, setCurrentTime] = useState(Date.now());
     const { sosActive, sosData, disableSOS, getSOSStatusMessage, getAssignedGuard, loading } = useSOSProtection();
     const { user } = useFirebase();
     const router = useRouter();
@@ -57,6 +58,16 @@ const SOS = () => {
             }
         }
     }, [sosActive, loading, sosData, getAssignedGuard]);
+
+    // Timer effect for real-time updates
+    useEffect(() => {
+        if (sosActive) {
+            const interval = setInterval(() => {
+                setCurrentTime(Date.now());
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [sosActive]);
 
     const handleCancelSOS = () => {
         setShowCancelConfirmation(true);
@@ -150,70 +161,109 @@ const SOS = () => {
                     backgroundColor: '#f8f9fa',
                     padding: '0',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    overflowX: 'hidden',
+                    width: '100%',
+                    maxWidth: '100vw'
                 }}>
                     {/* Top Status Bar */}
                     <div style={{
                         backgroundColor: '#dc2626',
                         color: 'white',
-                        padding: '15px 20px',
+                        padding: window.innerWidth < 768 ? '8px 10px' : '15px 20px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                        gap: window.innerWidth < 768 ? '2px' : '12px',
+                        overflowX: 'hidden',
+                        width: '100%',
+                        boxSizing: 'border-box'
                     }}>
                         {/* Left Side - SOS Status */}
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
                             <div style={{
-                                fontSize: '24px',
-                                marginRight: '10px',
-                                animation: 'emergencyBlink 1s infinite'
+                                fontSize: window.innerWidth < 768 ? '14px' : '24px',
+                                marginRight: window.innerWidth < 768 ? '4px' : '10px',
+                                animation: 'emergencyBlink 1s infinite',
+                                flexShrink: 0
                             }}>
                                 🚨
                             </div>
-                            <div>
-                                <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{
+                                    fontSize: window.innerWidth < 768 ? '12px' : '18px',
+                                    fontWeight: 'bold',
+                                    lineHeight: window.innerWidth < 768 ? '1' : '1.2'
+                                }}>
                                     SOS ACTIVE
                                 </div>
-                                {getSOSStatusMessage() && (
-                                    <div style={{ fontSize: '12px', opacity: 0.9 }}>
-                                        {getSOSStatusMessage()}
+                                {sosData?.startTime && (
+                                    <div style={{
+                                        fontSize: window.innerWidth < 768 ? '8px' : '12px',
+                                        opacity: 0.9,
+                                        lineHeight: window.innerWidth < 768 ? '1' : '1.2'
+                                    }}>
+                                        {(() => {
+                                            const duration = Math.floor((currentTime - sosData.startTime) / 1000);
+                                            const minutes = Math.floor(duration / 60);
+                                            const seconds = duration % 60;
+                                            return `SOS Active for ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                                        })()}
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Right Side - Stop SOS Button */}
-                        <button
-                            onClick={handleCancelSOS}
-                            style={{
-                                backgroundColor: '#16a34a',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                padding: '8px 12px',
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = '#15803d';
-                                e.target.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = '#16a34a';
-                                e.target.style.transform = 'scale(1)';
-                            }}
-                            title="Stop SOS - I am Safe"
-                        >
-                            <span style={{ fontSize: '14px' }}>✅</span>
-                            <span>I'M SAFE</span>
-                        </button>
+                        {/* Right Side - Stop SOS Button (fixed alignment) */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            flex: 'none',
+                            minWidth: 0,
+                            width: '100%',
+                            maxWidth: '180px',
+                            overflow: 'hidden',
+                        }}>
+                            <button
+                                onClick={handleCancelSOS}
+                                style={{
+                                    backgroundColor: '#16a34a',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '3px',
+                                    padding: window.innerWidth < 768 ? '2px 6px' : '8px 16px',
+                                    fontSize: window.innerWidth < 768 ? '10px' : '14px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                                    flexShrink: 0,
+                                    whiteSpace: 'nowrap',
+                                    lineHeight: window.innerWidth < 768 ? '1' : 'normal',
+                                    width: '100%',
+                                    maxWidth: '180px',
+                                    overflow: 'hidden',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.backgroundColor = '#15803d';
+                                    e.target.style.transform = 'scale(1.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.backgroundColor = '#16a34a';
+                                    e.target.style.transform = 'scale(1)';
+                                }}
+                                title="Stop SOS - I am Safe"
+                            >
+                                <>
+                                    <span style={{ fontSize: '14px' }}>✅</span>
+                                    <span style={{ marginLeft: '6px' }}>I'M SAFE</span>
+                                </>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Main Content Area - Full Map */}
@@ -348,7 +398,7 @@ const SOS = () => {
                                     }}
                                     title="Call Emergency"
                                 >
-                                    �
+                                    📞
                                 </button>
 
                                 {/* Instructions Button */}
@@ -779,12 +829,17 @@ const SOS = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div style={{
-                                display: 'flex',
-                                gap: '15px',
-                                justifyContent: 'center',
-                                flexDirection: window.innerWidth < 400 ? 'column' : 'row'
-                            }}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    gap: '15px',
+                                    justifyContent: 'center',
+                                    flexDirection: window.innerWidth < 400 ? 'column' : 'row',
+                                    flexWrap: 'wrap',
+                                    width: '100%',
+                                    marginTop: '10px',
+                                }}
+                            >
                                 <button
                                     onClick={handleKeepSOS}
                                     style={{
@@ -797,7 +852,9 @@ const SOS = () => {
                                         fontWeight: 'bold',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s ease',
-                                        minWidth: '140px'
+                                        minWidth: '120px',
+                                        maxWidth: '100%',
+                                        flex: 1,
                                     }}
                                     onMouseEnter={(e) => {
                                         e.target.style.backgroundColor = '#b91c1c';
@@ -823,7 +880,9 @@ const SOS = () => {
                                         fontWeight: 'bold',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s ease',
-                                        minWidth: '140px'
+                                        minWidth: '120px',
+                                        maxWidth: '100%',
+                                        flex: 1,
                                     }}
                                     onMouseEnter={(e) => {
                                         e.target.style.backgroundColor = '#15803d';
