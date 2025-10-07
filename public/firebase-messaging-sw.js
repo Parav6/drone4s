@@ -37,19 +37,27 @@ try {
 if (messaging) {
   messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    
+
     // Customize notification here
-    const notificationTitle = payload.notification?.title || 'Background Message Title';
+    const notificationTitle = payload.notification?.title || 'CampusNaksha Alert';
     const notificationOptions = {
-      body: payload.notification?.body || 'Background Message body.',
-      icon: '/firebase-logo.svg',
-      badge: '/firebase-logo.svg',
-      tag: 'background-message',
+      body: payload.notification?.body || 'You have a new campus notification.',
+      icon: '/android-chrome-192x192.png',
+      badge: '/favicon-32x32.png',
+      tag: 'campusnaksha-notification',
       requireInteraction: true,
+      vibrate: [200, 100, 200],
+      data: payload.data,
       actions: [
         {
           action: 'open',
-          title: 'Open App'
+          title: 'Open CampusNaksha',
+          icon: '/favicon-16x16.png'
+        },
+        {
+          action: 'close',
+          title: 'Close',
+          icon: '/favicon-16x16.png'
         }
       ]
     };
@@ -61,7 +69,7 @@ if (messaging) {
 }
 
 // Handle notification click
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function (event) {
   console.log('[firebase-messaging-sw.js] Notification click received.');
 
   event.notification.close();
@@ -70,7 +78,7 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(
     clients.matchAll({
       type: "window"
-    }).then(function(clientList) {
+    }).then(function (clientList) {
       for (var i = 0; i < clientList.length; i++) {
         var client = clientList[i];
         if (client.url == '/' && 'focus' in client) {

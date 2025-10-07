@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Host
+Host: https://campusnaksha.vercel.app
+
+# Sitemaps
+Sitemap: https://campusnaksha.vercel.app/sitemap.xml
