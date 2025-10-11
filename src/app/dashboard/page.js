@@ -27,7 +27,7 @@ export default function Dashboard() {
     };
 
     const handleGarbageRedirect = () => {
-        router.push('/dashboard/garbage'); // or wherever garbage monitoring should go
+        router.push('/dashboard/garbageTracking'); // or wherever garbage monitoring should go
     };
 
     return (
@@ -80,6 +80,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Garbage Monitoring */}
+                            {user?.role === 'admin' && (
                             <div className="group bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-yellow-500/50 transition-all duration-300 hover:transform hover:scale-105">
                                 <div className="flex items-center mb-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
@@ -99,6 +100,7 @@ export default function Dashboard() {
                                     Monitor Status
                                 </button>
                             </div>
+                            )}
 
                             {/* Guard Dashboard - Show only for guards */}
                             {user?.role === 'guard' && (
@@ -125,7 +127,9 @@ export default function Dashboard() {
                 </div>
 
                 {/* Emergency SOS Button - Fixed position */}
+                {user?.role === 'user' && (
                 <SOSButton />
+                )}
             </div>
         </ProtectedRoute>
     );

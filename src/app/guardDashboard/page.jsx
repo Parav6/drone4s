@@ -5,7 +5,7 @@ import Map from "@/components/Map";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useFirebase } from "@/context/Firebase";
 import { onValue, ref } from "firebase/database";
-import polyline from "@mapbox/polyline";
+
 
 const GuardDashboard = () => {
     const { user, database } = useFirebase();
@@ -262,3 +262,7 @@ const GuardDashboard = () => {
 };
 
 export default GuardDashboard;
+
+
+
+
