@@ -18,8 +18,8 @@ const GarbageTrackingPage = () => {
 
     // Main Gate of IIT Roorkee coordinates (starting and ending point)
     const mainGateCoords = {
-        lat: 29.860,
-        lng: 77.900
+        lat: 29.865483102591366,
+        lng: 77.88954293066463
     };
 
     // Fetch garbage tracking data from Firebase
