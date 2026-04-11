@@ -91,7 +91,7 @@ export default function AdminAlertMap() {
     }
 
     const script = document.createElement("script");
-    script.src = `https://apis.mappls.com/advancedmaps/api/f6cc67d011fd246c37345dbaac88f334/map_sdk?layer=vector&v=3.0`;
+    script.src = `https://apis.mappls.com/advancedmaps/api/${process.env.NEXT_PUBLIC_MAP_MY_INDIA_API_KEY}/map_sdk?layer=vector&v=3.0`;
     script.async = true;
     script.onload = initializeMap;
     script.onerror = () => {

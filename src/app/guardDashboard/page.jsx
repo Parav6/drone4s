@@ -165,7 +165,7 @@ const GuardDashboard = () => {
                 // const start ={lat:"29.86176", lon:" 77.89815"}
                 // const end = {lat:"29.86282", lon:"77.89826"}
                 console.log(start,end)
-                const url = `https://apis.mappls.com/advancedmaps/v1/f6cc67d011fd246c37345dbaac88f334/route_adv/driving/${start.lon},${start.lat};${end.lon},${end.lat}`;
+                  const url = `https://apis.mappls.com/advancedmaps/v1/${NEXT_PUBLIC_MAP_MY_INDIA_API_KEY}/route_adv/driving/${start.lon},${start.lat};${end.lon},${end.lat}`;
                 const res = await fetch('/api/distance', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

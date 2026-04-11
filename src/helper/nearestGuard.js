@@ -199,8 +199,8 @@ const nearestGuard = async (userId) => {
  */
 const calculateDistance = async (fromLat, fromLng, toLat, toLng) => {
     try {
-        // MapMyIndia API key - replace with your actual API key
-        const API_KEY = 'f6cc67d011fd246c37345dbaac88f334'; // Using the same key from your admin page
+
+        const API_KEY = process.env.NEXT_PUBLIC_MAP_MY_INDIA_API_KEY;
         
         // MapMyIndia Distance Matrix API endpoint
         const url = `https://apis.mappls.com/advancedmaps/v1/${API_KEY}/distance_matrix/driving/${fromLng},${fromLat};${toLng},${toLat}`;

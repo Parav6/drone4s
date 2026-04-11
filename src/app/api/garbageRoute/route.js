@@ -10,7 +10,7 @@ export async function POST(request) {
         );
       }
   
-      const apiKey = process.env.MAPPLS_REST_KEY || "f6cc67d011fd246c37345dbaac88f334";
+       const apiKey = process.env.MAPPLS_REST_KEY ;
       
       if (!apiKey) {
         return Response.json(
