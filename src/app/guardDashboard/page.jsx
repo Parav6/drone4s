@@ -5,10 +5,12 @@ import Map from "@/components/Map";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useFirebase } from "@/context/Firebase";
 import { onValue, ref } from "firebase/database";
+import { useRouter } from "next/navigation";
 
 
 const GuardDashboard = () => {
     const { user, database } = useFirebase();
+    const router = useRouter();
     // const REST_API_KEY = process.env.NEXT_PUBLIC_MAP_MY_INDIA_REST_KEY || process.env.NEXT_PUBLIC_MAPPLS_REST_API_KEY || process.env.NEXT_PUBLIC_MAPMYINDIA_REST_KEY;
     // const REST_API_KEY = process.env.NEXT_PUBLIC_MAP_MY_INDIA_REST_KEY || process.env.NEXT_PUBLIC_MAPPLS_REST_API_KEY || process.env.NEXT_PUBLIC_MAPMYINDIA_REST_KEY;
 
@@ -253,6 +255,26 @@ const GuardDashboard = () => {
                             </div>
                         ) : (
                             <div style={{ fontSize: 13, color: "#6b7280" }}>No SOS assigned to you yet.</div>
+                        )}
+
+                        {user?.role === 'guard' && (
+                            <button
+                                onClick={() => router.push('/admin/alertMap')}
+                                style={{
+                                    marginTop: 12,
+                                    width: '100%',
+                                    background: 'linear-gradient(90deg, #16a34a, #059669)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: 10,
+                                    padding: '10px 12px',
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Verify Alerts
+                            </button>
                         )}
                     </div>
                 </div>

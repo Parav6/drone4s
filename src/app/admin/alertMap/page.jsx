@@ -12,16 +12,17 @@ export default function AdminAlertMap() {
   const [mapLoading, setMapLoading] = useState(true);
   const [selectedAlertId, setSelectedAlertId] = useState(null);
   const [markers, setMarkers] = useState({});
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isGuard } = useAuth();
+  const canVerifyAlerts = isAdmin || isGuard;
   const router = useRouter();
   const db = getDatabase(app);
 
-  // Redirect if not admin
+  // Redirect if user is neither admin nor guard
   useEffect(() => {
-    if (!isAdmin) {
-      router.push('/admin');
+    if (!canVerifyAlerts) {
+      router.push('/dashboard');
     }
-  }, [isAdmin, router]);
+  }, [canVerifyAlerts, router]);
 
   // Load alerts from Firebase
   useEffect(() => {
@@ -322,7 +323,7 @@ export default function AdminAlertMap() {
     }
   }, [map]);
 
-  if (!isAdmin) {
+  if (!canVerifyAlerts) {
     return (
       <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center">
         <div className="relative overflow-hidden">
@@ -330,7 +331,7 @@ export default function AdminAlertMap() {
           <div className="relative bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl border border-gray-700/50 text-center shadow-2xl">
             <div className="text-red-400 text-6xl mb-4">🚫</div>
             <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
-            <p className="text-gray-300">You need administrator privileges to access this page.</p>
+            <p className="text-gray-300">You need administrator or guard privileges to access this page.</p>
           </div>
         </div>
       </div>
@@ -353,10 +354,10 @@ export default function AdminAlertMap() {
               <p className="text-gray-300 mt-2">Verify and manage emergency alerts across campus</p>
             </div>
             <button
-              onClick={() => router.push('/admin')}
+              onClick={() => router.push(isGuard ? '/guardDashboard' : '/admin')}
               className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-3 rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105"
             >
-              ← Back to Admin Panel
+              {isGuard ? '← Back to Guard Dashboard' : '← Back to Admin Panel'}
             </button>
           </div>
         </div>

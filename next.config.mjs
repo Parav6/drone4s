@@ -1,10 +1,15 @@
 import withPWA from 'next-pwa'
 
-const withPWAConfig = withPWA({
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    runtimeCaching: [
+export default withPWA({
+    reactStrictMode: false,
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production'
+    },
+    pwa: {
+        dest: 'public',
+        register: true,
+        skipWaiting: true,
+        runtimeCaching: [
         {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
@@ -149,12 +154,5 @@ const withPWAConfig = withPWA({
             }
         }
     ]
-})
-
-export default withPWAConfig({
-    reactStrictMode: false,
-    swcMinify: true,
-    compiler: {
-        removeConsole: process.env.NODE_ENV === 'production'
     }
 })
